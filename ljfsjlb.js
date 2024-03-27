@@ -58,14 +58,14 @@ class UserInfo {
                     if(ret.resp?.body) {
                         result = JSON.parse(ret.resp.body)
                     } else {
-                        console.log(`账号[${this.index}]调用${method}[${fn}]出错，返回为空`)
+                        $.logAndNotify(`账号[${this.index}]调用${method}[${fn}]出错，返回为空`)
                     }
                 } else {
-                    console.log(`账号[${this.index}]调用${method}[${fn}]出错，返回状态码[${ret.resp?.statusCode||''}]`)
+                    $.logAndNotify(`账号[${this.index}]调用${method}[${fn}]出错，返回状态码[${ret.resp?.statusCode||''}]`)
                 }
             })
         } catch(e) {
-            console.log(e)
+            $.logAndNotify(e)
         } finally {
             return Promise.resolve(result);
         }
@@ -85,16 +85,16 @@ class UserInfo {
                     this.integral = result.result.integral
                     this.phone = result.result.telephone
                     this.buyerNo = result.result.buyerNo
-                    console.log(`登录成功`)
-                    console.log(`昵称: ${this.name}`)
-                    console.log(`ID: ${this.id}`)
-                    console.log(`积分: ${this.integral}`)
+                    $.logAndNotify(`登录成功`)
+                    $.logAndNotify(`昵称: ${this.name}`)
+                    $.logAndNotify(`ID: ${this.id}`)
+                    $.logAndNotify(`积分: ${this.integral}`)
                 } else {
                     $.logAndNotify(`账号[${this.index}]登录失败，CK失效`)
                 }
             })
         } catch(e) {
-            console.log(e)
+            $.logAndNotify(e)
         } finally {
             return Promise.resolve(1);
         }
@@ -128,7 +128,7 @@ class UserInfo {
                     if(this.taskList.IsSingDao != 'ok') {
                         await this.ContinuitySignIn();
                     } else {
-                        console.log(`今天已签到，已签到${this.taskList.SignDay}天`)
+                        $.logAndNotify(`今天已签到，已签到${this.taskList.SignDay}天`)
                     }
                     if(this.taskList.VideoNum < VIDEO_TASK_NUM) {
                         let num = VIDEO_TASK_NUM - this.taskList.VideoNum
@@ -139,11 +139,11 @@ class UserInfo {
                     }
                     //await this.GiftPoints();
                 } else {
-                    console.log(`查询任务失败：${result?.error?.message}`)
+                    $.logAndNotify(`查询任务失败：${result?.error?.message}`)
                 }
             })
         } catch(e) {
-            console.log(e)
+            $.logAndNotify(e)
         } finally {
             return Promise.resolve(1);
         }
@@ -158,13 +158,13 @@ class UserInfo {
             await this.taskApi(fn,method,url,body).then(async (result) => {
                 if(result.success==true) {
                     this.taskList.SignDay++
-                    console.log(`签到成功，获得${result.result}积分，已签到${this.taskList.SignDay}天`)
+                    $.logAndNotify(`签到成功，获得${result.result}积分，已签到${this.taskList.SignDay}天`)
                 } else {
-                    console.log(`签到失败：${result?.error?.message}`)
+                    $.logAndNotify(`签到失败：${result?.error?.message}`)
                 }
             })
         } catch(e) {
-            console.log(e)
+            $.logAndNotify(e)
         } finally {
             return Promise.resolve(1);
         }
@@ -178,14 +178,14 @@ class UserInfo {
             let body = ``
             await this.taskApi(fn,method,url,body).then(async (result) => {
                 if(result.success==true) {
-                    console.log(`观看视频成功`)
-                    if(result.result > 0) console.log(`完成观看视频任务成功，获得${result.result}积分`)
+                    $.logAndNotify(`观看视频成功`)
+                    if(result.result > 0) $.logAndNotify(`完成观看视频任务成功，获得${result.result}积分`)
                 } else {
-                    console.log(`观看视频失败：${result?.error?.message}`)
+                    $.logAndNotify(`观看视频失败：${result?.error?.message}`)
                 }
             })
         } catch(e) {
-            console.log(e)
+            $.logAndNotify(e)
         } finally {
             return Promise.resolve(1);
         }
@@ -199,13 +199,13 @@ class UserInfo {
             let body = ``
             await this.taskApi(fn,method,url,body).then(async (result) => {
                 if(result.success==true) {
-                    console.log(`分享成功，每天首次分享可得50积分`)
+                    $.logAndNotify(`分享成功，每天首次分享可得50积分`)
                 } else {
-                    console.log(`分享失败：${result?.error?.message}`)
+                    $.logAndNotify(`分享失败：${result?.error?.message}`)
                 }
             })
         } catch(e) {
-            console.log(e)
+            $.logAndNotify(e)
         } finally {
             return Promise.resolve(1);
         }
@@ -213,10 +213,10 @@ class UserInfo {
     
     async userTask() {
         try {
-            console.log(`\n============= 账号[${this.index}] =============`)
+            $.logAndNotify(`\n============= 账号[${this.index}] =============`)
             await this.getScoreAccount();
         } catch(e) {
-            console.log(e)
+            $.logAndNotify(e)
         } finally {
             return Promise.resolve(1);
         }
@@ -229,18 +229,18 @@ class UserInfo {
     }else {
         if(!(await checkEnv())) return;
         
-        console.log('\n================ 登录 ================')
+        $.logAndNotify('\n================ 登录 ================')
         for(let user of userList) {
-            console.log(`----------- 账号[${user.index}] -----------`)
+            $.logAndNotify(`----------- 账号[${user.index}] -----------`)
             await user.GetIsLogin(); 
         }
         
         let validUserList = userList.filter(x => x.valid)
         
         if(validUserList.length > 0) {
-            console.log('\n================ 任务 ================')
+            $.logAndNotify('\n================ 任务 ================')
             for(let user of validUserList) {
-                console.log(`----------- 账号[${user.index}] -----------`)
+                $.logAndNotify(`----------- 账号[${user.index}] -----------`)
                 await user.IsSignDao(); 
             }
         }
@@ -248,7 +248,7 @@ class UserInfo {
         await $.showmsg();
     }
 })()
-.catch((e) => console.log(e))
+.catch((e) => $.logAndNotify(e))
 .finally(() => $.done())
 
 ///////////////////////////////////////////////////////////////////
@@ -269,11 +269,11 @@ async function checkEnv() {
         }
         userCount = userList.length
     } else {
-        console.log('未找到CK')
+        $.logAndNotify('未找到CK')
         return;
     }
     
-    console.log(`共找到${userCount}个账号`)
+    $.logAndNotify(`共找到${userCount}个账号`)
     return true
 }
 ////////////////////////////////////////////////////////////////////
